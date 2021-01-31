@@ -32,10 +32,6 @@ function AdminNavBar() {
                     {bol === 2 && <ClickedButton>Categories</ClickedButton>}
                 </Link>
 
-                <Link to="/admin/orders">
-                    {bol !== 3 && <NavButton>Orders</NavButton>}
-                    {bol === 3 && <ClickedButton>Orders</ClickedButton>}
-                </Link>
             </NavButtonsContainer>
         </NavContainer>
     );

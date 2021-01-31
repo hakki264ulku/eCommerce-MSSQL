@@ -1,7 +1,6 @@
 import '../App.css';
 import tw from 'twin.macro'
 import Axios from 'axios'
-import { v4 as uuidv4 } from 'uuid';
 import UUID from 'uuid-int'
 import { useHistory } from 'react-router-dom'
 import AdminNavBar from './AdminNavBar'
@@ -87,6 +86,7 @@ function AddProductPage() {
           <InputContainer>
             <InputName>Category & CategoryID: </InputName>
             <Select onChange={e => setCategoryid(e.target.value.split('.')[1])}>
+            <Option>{`Choose the category otherwise, there'll be error`}</Option>
               {categories.map(c => (
                 <Option key={c.CategoryID} id={c.CategoryID}>{`${c.CategoryName}.${c.CategoryID}`}</Option>
               ))}

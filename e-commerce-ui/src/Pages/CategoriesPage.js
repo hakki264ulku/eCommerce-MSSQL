@@ -1,19 +1,22 @@
 import '../App.css';
 import tw from 'twin.macro'
 import NavBar from './NavBar'
+import UUID from 'uuid-int'
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom'
+import firebase from '../utils/firebase'
 
-import { getProducts, getCategories, getProductsByCategory } from '../utils/sellerUtils'
+import { getProducts, getCategories, getProductsByCategory, addOrder, getCustomerID } from '../utils/sellerUtils'
 
 
-function CategoriesPage() {
+function CategoriesPage(props) {
     let path = window.location.pathname.split('/')
     const history = useHistory()
 
     const [products, setProducts] = useState([])
     const [categories, setCategories] = useState([])
     const [category, setCategory] = useState("")
+    const [boolean, setBoolean] = useState(false)
 
     const getProds = async () => {
         console.log("path ", parseInt(path[2]))
@@ -23,8 +26,21 @@ function CategoriesPage() {
 
     // RUNS When the page is first mounted
     useEffect(() => {
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                setBoolean(true)
+            } else setBoolean(false)
+        });
         getProds()
     }, [])
+
+    const handleOrder = async (productID, ProductName, imgURL, price) => {
+        let OrderID = UUID(3).uuid()
+        OrderID = OrderID % 100 + parseInt((Math.random() * 10000))
+        let { ID } = await getCustomerID()
+        //console.log(ID)
+        await addOrder(OrderID, productID, ID, 1, 0, 0, ProductName, imgURL, price)
+    }
 
     return (
         <Container>
@@ -37,7 +53,8 @@ function CategoriesPage() {
                         <ProductName>{p.ProductName}</ProductName>
                         <ProductDesc>{p.ProductDescript}</ProductDesc>
                         <ProductPrice>{p.price}$</ProductPrice>
-                        <ProductButton>ORDER</ProductButton>
+                        {boolean && <ProductButton onClick={() => handleOrder(p.ProductID, p.ProductName, p.imgURL, p.price)}>ORDER</ProductButton>}
+                        {!boolean && <ProductButton onClick={() => alert("In order to order please Login/Sign UP")} >ORDER</ProductButton>}
                     </ProductCardContainer>
                 ))}
 

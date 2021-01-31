@@ -3,11 +3,14 @@ import tw from 'twin.macro'
 import Axios from 'axios'
 import AdminNavBar from './AdminNavBar'
 import AdminProductsNavBar from './AdminProductsNavBar'
+import { useHistory } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { getProducts } from '../utils/sellerUtils'
+import { getProducts, deleteProduct } from '../utils/sellerUtils'
 
 
 function ViewAllProducts() {
+  const history = useHistory()
+  let path = window.location.pathname.split('/')
 
   const [products, setProducts] = useState([])
 
@@ -23,6 +26,23 @@ function ViewAllProducts() {
   useEffect(() => {
     getPrs()
   }, [])
+
+  const handleDelete = async (productid) => {
+    console.log()
+    let newProducts = [...products]
+    newProducts = newProducts.filter((o) => {
+      if (productid === o.ProductID) return false
+      return true
+    })
+
+    setProducts(newProducts)
+
+    await deleteProduct(productid)
+  }
+
+  const handleUpdate = async (productid) => {
+    history.push(`/admin/products/update/${productid}`)
+  } 
 
 
 
@@ -43,6 +63,8 @@ function ViewAllProducts() {
               <TableHeader>CategoryID</TableHeader>
               <TableHeader>Price</TableHeader>
               <TableHeader>Stock</TableHeader>
+              <TableHeader>Delete</TableHeader>
+              <TableHeader>Edit</TableHeader>
             </TableRow>
           </TableHead>
           <ProductContainer>
@@ -55,6 +77,8 @@ function ViewAllProducts() {
                 <TableData>{p.CategoryID}</TableData>
                 <TableData>{p.price}$</TableData>
                 <TableData>{p.stock}</TableData>
+                <TableData><DelButton onClick={() => handleDelete(p.ProductID)} >X</DelButton></TableData>
+                <TableData><EditButton onClick={() => handleUpdate(p.ProductID)} >...</EditButton></TableData>
               </TableRow>
             ))}
           </ProductContainer>
@@ -77,5 +101,10 @@ const TableRow = tw.tr`bg-gray-100`
 const TableData = tw.td`text-base items-start align-middle`
 const IMG = tw.img`w-16 h-auto rounded-xl`
 const ProductContainer = tw.tbody``
+
+const DelButton = tw.button`p-2 font-bold border-none focus:outline-none bg-red-500 rounded-lg
+hover:cursor-pointer hover:bg-red-600`
+const EditButton = tw.button`p-2 font-bold border-none focus:outline-none bg-green-500 rounded-lg
+hover:cursor-pointer hover:bg-green-600`
 
 export default ViewAllProducts;

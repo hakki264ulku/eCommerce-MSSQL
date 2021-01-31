@@ -1,4 +1,6 @@
 import firebase from './firebase'
+import {addNewCustomer} from './sellerUtils'
+
 
 //import {getUserId} from './UserServices'
 
@@ -25,17 +27,14 @@ const getUserId = async () => {
 }
 
 // Register a user and save it also to firestore
-const signUp = async (email, password, userName) => {
+const signUp = async (CustomerID, FullName, CustomerEmail, CustomerPassword, CustomerAddress, CustomerPhone) => {
     try {
-        await auth.createUserWithEmailAndPassword(email, password)
-        const id = await getUserId()
+        await auth.createUserWithEmailAndPassword(CustomerEmail, CustomerPassword)
+        const CustomerUID = await getUserId()
 
-        const userRef = db.collection('users').doc(`${id}`)
-        await userRef.set({
-            userName,
-            email,
-            likes:[]
-        })
+        // ADD NEW CUSTOMER TO THE MSSQL
+        await addNewCustomer(CustomerID, FullName, CustomerEmail, CustomerPassword, CustomerAddress, CustomerPhone, CustomerUID)
+
     } catch (e) {
         throw new Error(e.message)
     }

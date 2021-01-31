@@ -56,7 +56,8 @@ router.post("/addProduct", async (r, res) => {
 
 //UPDATE PRODUCT
 router.post("/updateProduct", async (r, res) => {
-    const { ProductID, CategoryID, ProductName, ProductDescript, imgURL, price, stock } = r.query
+    const { ProductID, CategoryID, ProductName, ProductDescript, imgURL, price, stock } = r.body.params
+    console.log(ProductID,  CategoryID, ProductName, price, stock)
     var conn = new sql.ConnectionPool(dbConfig);
     conn.connect(async function (error) {
 
@@ -78,33 +79,8 @@ router.post("/updateProduct", async (r, res) => {
             rcrdSet = await req.execute('updateProduct')
 
             await conn.close()
+            res.send(rcrdSet)
 
-        } catch (e) {
-            console.log("error has occured ->", e)
-        }
-    });
-})
-
-//DELETE PRODUCT
-router.post("/deleteProduct", async (r, res) => {
-    const { ProductID } = r.query
-    var conn = new sql.ConnectionPool(dbConfig);
-    conn.connect(async function (error) {
-
-        if (error) {
-            throw error;
-        }
-        var req = new sql.Request(conn);
-        let rcrdSet
-
-        try {
-
-            req.input('ProductID', sql.BigInt, ProductID)
-            rcrdSet = await req.execute('deleteProduct')
-
-            await conn.close()
-
-            console.log(rcrdSet)
         } catch (e) {
             console.log("error has occured ->", e)
         }
